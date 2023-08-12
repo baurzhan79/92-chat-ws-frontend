@@ -1,5 +1,4 @@
 import axios from "../../axiosApi";
-import { push } from "connected-react-router";
 
 import { REGISTER_USER_SUCCESS, REGISTER_USER_FAILURE, LOGIN_USER_SUCCESS, LOGIN_USER_FAILURE, LOGOUT_USER } from "../actionTypes";
 
@@ -16,8 +15,6 @@ export const registerUser = userData => {
         try {
             const response = await axios.post("/users", userData);
             dispatch(registerUserSuccess(response.data));
-            dispatch(push("/"));
-            window.location.reload();
         }
         catch (error) {
             if (error.response && error.response.data) dispatch(registerUserFailure(error.response.data));
@@ -39,8 +36,6 @@ export const loginUser = userData => {
         try {
             const response = await axios.post("/users/sessions", userData);
             dispatch(loginUserSuccess(response.data.user));
-            dispatch(push("/"));
-            window.location.reload();
         }
         catch (error) {
             if (error.response && error.response.data) dispatch(loginUserFailure(error.response.data));
@@ -55,7 +50,5 @@ export const logoutUser = () => {
         const headers = { "Authorization": token };
         await axios.delete("/users/sessions", { headers });
         dispatch({ type: LOGOUT_USER });
-        dispatch(push("/"));
-        window.location.reload();
     }
 };

@@ -28,10 +28,17 @@ const ChatWs = ({ user }) => {
             }
 
             ws.current.onopen = () => {
+                setLoggedIn(true);
+
                 ws.current.send(JSON.stringify({
                     type: "GET_ONLINE_USERS"
                 }));
-                setLoggedIn(true);
+
+                ws.current.send(JSON.stringify({
+                    type: "GET_LAST_MESSAGES",
+                    token: user.token
+                }));
+
             }
 
             ws.current.onmessage = event => {
@@ -39,6 +46,10 @@ const ChatWs = ({ user }) => {
 
                 if (decodedMessage.type === "ONLINE_USERS") {
                     setOnlineUsers(JSON.parse(decodedMessage.users));
+                }
+
+                if (decodedMessage.type === "LAST_MESSAGES") {
+                    setMessages(decodedMessage.messages);
                 }
 
                 if (decodedMessage.type === "NEW_MESSAGE") {
@@ -67,6 +78,7 @@ const ChatWs = ({ user }) => {
     const sendMessage = () => {
         ws.current.send(JSON.stringify({
             type: "CREATE_MESSAGE",
+            userId: user._id,
             username: user.username,
             text: messageText
         }));
@@ -113,27 +125,6 @@ const ChatWs = ({ user }) => {
                         }
                     </Box>
 
-                    {/* <Box
-                        sx={{
-                            height: 290,
-                            border: '1px solid lightgray',
-                            '&:hover': {
-                                backgroundColor: 'primary.main',
-                                opacity: [0.9, 0.8, 0.7],
-                            },
-                        }}
-                    >
-                    </Box> */}
-                    {/* <TextField
-                        label="Chat room"
-                        fullWidth
-                        multiline
-                        rows={11}
-                        InputProps={{
-                            readOnly: true,
-                        }}
-                    // value={strOnlineUsers}
-                    /> */}
                     <Grid container spacing={2} className={classes.flexRowCenter} sx={{ my: 1 }}>
                         <Grid item xs={12} sm={10}>
                             <TextField
